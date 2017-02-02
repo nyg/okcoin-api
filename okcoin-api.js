@@ -4,6 +4,29 @@ function OKCoin(domain, channels) {
     this.channels = channels
 }
 
+function OKCoin(domain, apiKey, secretKey, channels) {
+    this.wsUrl = 'wss://real.okcoin.' + domain + ':10440/websocket/okcoinapi'
+    this.apiKey = apiKey
+    this.secretKey = secretKey
+    this.channels = channels
+}
+
+OKCoin.prototype.test = function () {
+    var message = 'api_key=' + this.apiKey + '&secret_key=' + this.secretKey
+    var args = {
+        event: 'addChannel',
+        channel: 'ok_sub_futureusd_userinfo',
+        parameters: {
+            api_key: this.apiKey,
+            sign: SparkMD5.hash(message).toUpperCase()
+        }
+    }
+    this.channels['ok_sub_futureusd_userinfo'] = handleUserInfo
+    var send = JSON.stringify(args)
+    console.log(send);
+    this.ws.send(send)
+}
+
 OKCoin.prototype.start = function () {
 
     var _this = this
