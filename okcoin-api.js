@@ -49,7 +49,12 @@ OKCoin.prototype.start = function () {
 
         _this.ws.onmessage = function (event) {
             JSON.parse(event.data).forEach(function (message) {
-                _this.channels[message.channel](message)
+                if (message.hasOwnProperty('success')) {
+                    console.log(message);
+                }
+                else {
+                    _this.channels[message.channel](message)
+                }
             })
         }
 
