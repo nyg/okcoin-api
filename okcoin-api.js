@@ -1,10 +1,4 @@
-function OKCoin(domain, channels) {
-    console.log('OKCoin object created (' + domain + ')')
-    this.wsUrl = 'wss://real.okcoin.' + domain + ':10440/websocket/okcoinapi'
-    this.channels = channels
-}
-
-function OKCoin(domain, apiKey, secretKey, channels) {
+function OKCoin(domain, channels, apiKey, secretKey) {
     this.wsUrl = 'wss://real.okcoin.' + domain + ':10440/websocket/okcoinapi'
     this.apiKey = apiKey
     this.secretKey = secretKey
