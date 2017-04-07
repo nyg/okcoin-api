@@ -43,7 +43,7 @@ OKCoin.prototype.start = function () {
 
         _this.ws.onmessage = function (event) {
             JSON.parse(event.data).forEach(function (message) {
-                if (message.hasOwnProperty('success')) {
+                if (message.channel == 'addChannel') {
                     console.log(message);
                 }
                 else {
