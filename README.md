@@ -10,9 +10,12 @@ function handleDepth(message) {
     // ...
 }
 
-new OKCoin('com', {
+new OKCoin()
+.setChannels({
     // channel_name: callback_function
     ok_sub_futureusd_btc_index: handleIndex,
     ok_sub_futureusd_btc_depth_quarter_60: handleDepth
-}).start()
+})
+.isFutures()
+.start()
 ```
