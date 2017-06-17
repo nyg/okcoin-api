@@ -1,5 +1,5 @@
 function OKCoin() {
-    this.wsUrl = 'wss://real.okex.com:10440/websocket/okcoinapi'
+    this.wsUrl = 'wss://real.okcoin.com:10440/websocket/okcoinapi'
     this.channels = null
     this.apiKey = null
     this.secretKey = null
