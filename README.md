@@ -16,11 +16,8 @@ function handleDepth(message) {
 }
 
 new OKCoin('wss://real.okex.com:10441/websocket')
-.setChannelHandlers({
-    // channel_name: callback_function
-    ok_sub_futureusd_btc_index: handleIndex,
-    ok_sub_futureusd_btc_depth_quarter_60: handleDepth
-})
+.addChannelHandler('ok_sub_futureusd_btc_index', handleIndex)
+.addChannelHandler('ok_sub_futureusd_btc_depth_quarter_60', handleDepth)
 .start()
 ```
 
