@@ -1,19 +1,19 @@
-// v1: wss://real.okcoin.com:10440/websocket/okcoinapi – doesn't work
-// v2: wss://real.okex.com:10441/websocket – works
-// v3: wss://real.okex.com:10442/ws/v3 – not supported yet
+// wss://real.okex.com:10440/websocket/okcoinapi – works
+// wss://real.okex.com:10441/websocket – works
+// wss://real.okex.com:10442/ws/v3 – not supported yet
 
 function OKCoin(apiUrl) {
 
     this.wsUrl = apiUrl
-    this.channelHandlers = null
+    this.channelHandlers = {}
 
     // not supported
     this.apiKey = null
     this.secretKey = null
 }
 
-OKCoin.prototype.setChannelHandlers = function (channelHandlers) {
-    this.channelHandlers = channelHandlers
+OKCoin.prototype.addChannelHandler = function (channel, handler) {
+    this.channelHandlers[channel] = handler
     return this
 }
 
@@ -42,7 +42,6 @@ OKCoin.prototype.start = function () {
                 channels.push({ 'event': 'addChannel', 'channel': channelName })
             }
 
-            console.log(channels);
             _this.ws.send(JSON.stringify(channels))
         }
 
@@ -51,7 +50,7 @@ OKCoin.prototype.start = function () {
 
             try {
                 var data = pako.inflateRaw(event.data, { to: 'string' })
-                JSON.parse(data).forEach((message) => {
+                JSON.parse(data).forEach(message => {
 
                     if (message.channel == 'addChannel') {
                         console.log(message)

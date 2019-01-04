@@ -7,6 +7,7 @@
         <script src="okcoin-api.js"></script>
     </head>
     <body>
+        <p>Check your browser's console.</p>
         <script type="text/javascript">
 
             function handler(message) {
@@ -15,11 +16,9 @@
             }
 
             new OKCoin('wss://real.okex.com:10441/websocket')
-                .setChannelHandlers({
-                    ok_sub_futureusd_btc_index: handler,
-                    ok_sub_futureusd_btc_trade_this_week: handler,
-                    ok_sub_futureusd_btc_ticker_this_week: handler
-                })
+                .addChannelHandler('ok_sub_futureusd_btc_index', handler)
+                .addChannelHandler('ok_sub_futureusd_btc_trade_this_week', handler)
+                .addChannelHandler('ok_sub_futureusd_btc_ticker_this_week', handler)
                 .start()
         </script>
     </body>

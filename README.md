@@ -4,7 +4,7 @@ Basic Javascript wrapper for OKCoin & OKEx's WebSocket API.
 
 ## Example
 
-See [index.html]() for a working example.
+See [index.html](https://nyg.github.io/okcoin-api/index.html) for a live working example.
 
 ```javascript
 function handleIndex(message) {
@@ -38,4 +38,4 @@ Requires [pako](http://nodeca.github.io/pako/).
 
 ## Note
 
-Doesn't support API v3.
+Doesn't support version 3 of the API.
