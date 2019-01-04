@@ -1,12 +1,19 @@
-function OKCoin() {
-    this.wsUrl = 'wss://real.okcoin.com:10440/websocket/okcoinapi'
-    this.channels = null
+// v1: wss://real.okcoin.com:10440/websocket/okcoinapi – doesn't work
+// v2: wss://real.okex.com:10441/websocket – works
+// v3: wss://real.okex.com:10442/ws/v3 – not supported yet
+
+function OKCoin(apiUrl) {
+
+    this.wsUrl = apiUrl
+    this.channelHandlers = null
+
+    // not supported
     this.apiKey = null
     this.secretKey = null
 }
 
-OKCoin.prototype.setChannels = function (channels) {
-    this.channels = channels
+OKCoin.prototype.setChannelHandlers = function (channelHandlers) {
+    this.channelHandlers = channelHandlers
     return this
 }
 
@@ -16,47 +23,51 @@ OKCoin.prototype.setPrivateKeys = function (apiKey, secretKey) {
     return this
 }
 
-OKCoin.prototype.isFutures = function () {
-    this.wsUrl = this.wsUrl.replace('okcoin', 'okex')
-    return this
-}
-
-OKCoin.prototype.isCny = function () {
-    this.wsUrl = this.wsUrl.replace('com', 'cn')
-    return this
-}
-
 OKCoin.prototype.start = function () {
 
     var _this = this
 
-    _this.initWs = function () {
+    _this.init = function () {
 
         _this.ws = new WebSocket(_this.wsUrl)
+        _this.ws.binaryType = 'arraybuffer'
 
+        /* WebSocket opened */
         _this.ws.onopen = function (event) {
 
             console.log('Connection opened')
 
             var channels = []
-            for (channelName in _this.channels) {
+            for (channelName in _this.channelHandlers) {
                 channels.push({ 'event': 'addChannel', 'channel': channelName })
             }
 
+            console.log(channels);
             _this.ws.send(JSON.stringify(channels))
         }
 
+        /* Message received */
         _this.ws.onmessage = function (event) {
-            JSON.parse(event.data).forEach(function (message) {
-                if (message.channel == 'addChannel') {
-                    console.log(message);
-                }
-                else {
-                    _this.channels[message.channel](message)
-                }
-            })
+
+            try {
+                var data = pako.inflateRaw(event.data, { to: 'string' })
+                JSON.parse(data).forEach((message) => {
+
+                    if (message.channel == 'addChannel') {
+                        console.log(message)
+                    }
+                    else {
+                        // execute channel handler
+                        _this.channelHandlers[message.channel](message)
+                    }
+                })
+            }
+            catch (error) {
+                console.log(error)
+            }
         }
 
+        /* Error received */
         _this.ws.onerror = function (event) {
 
             console.log('Error received:')
@@ -64,34 +75,17 @@ OKCoin.prototype.start = function () {
 
             var status = _this.ws.readyState
             if (status != 1) {
-                console.log('Connection status was: ' + status + ', restarting connection')
-                _this.initWs()
+                console.log('Connection status was: ' + status + ', restarting connection.')
+                _this.init()
             }
         }
 
+        /* WebSocket closed */
         _this.ws.onclose = function (event) {
-            console.log('Connection closed, restarting connection')
-            _this.initWs()
+            console.log('Connection closed, restarting connection.')
+            _this.init()
         }
     }
 
-    _this.initWs()
-}
-
-OKCoin.prototype.test = function () {
-
-    var message = 'api_key=' + this.apiKey + '&secret_key=' + this.secretKey
-    var args = {
-        event: 'addChannel',
-        channel: 'ok_sub_futureusd_userinfo',
-        parameters: {
-            api_key: this.apiKey,
-            sign: SparkMD5.hash(message).toUpperCase()
-        }
-    }
-
-    this.channels['ok_sub_futureusd_userinfo'] = handleUserInfo
-    var send = JSON.stringify(args)
-    console.log(send);
-    this.ws.send(send)
+    _this.init()
 }

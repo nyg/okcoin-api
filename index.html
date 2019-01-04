@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>okcoin-api</title>
+        <script src="https://cdn.jsdelivr.net/npm/pako@1.0.7/dist/pako_inflate.min.js"></script>
+        <script src="okcoin-api.js"></script>
+    </head>
+    <body>
+        <script type="text/javascript">
+
+            function handler(message) {
+                // handle message
+                console.log(message)
+            }
+
+            new OKCoin('wss://real.okex.com:10441/websocket')
+                .setChannelHandlers({
+                    ok_sub_futureusd_btc_index: handler,
+                    ok_sub_futureusd_btc_trade_this_week: handler,
+                    ok_sub_futureusd_btc_ticker_this_week: handler
+                })
+                .start()
+        </script>
+    </body>
+</html>
